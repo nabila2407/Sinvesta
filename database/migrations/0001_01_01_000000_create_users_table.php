@@ -1,0 +1,64 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('users', function (Blueprint $table) {
+            $table->id();
+
+            // ubah dari 'name' -> 'nama_lengkap' | maksimal 100 karakter
+            $table->string('nama_lengkap', 100);
+
+            // tambahkan kolom untuk  menyimpan username | maksimal 50 karakter
+            $table->string('username', 50)->unique();
+
+            // tambahkan batas maksimal 100 di kolom email
+            $table->string('email', 100)->unique();
+
+            // tambahkan kolom role dengan type data enum
+            // role hanya memiliki 2 pilihan = 'admin' & 'user'
+            $table->unem('role', ['admin', 'user'])->default('user');
+
+            // tambahkan kolom untuk menyimpan lembaga | maksimal 100 karakter
+            $table->string('lembaga', 100);
+
+            $table->timestamps('email_verified_at')->nullable();
+            $table->string('password');
+            $table->rememberToken();
+            $table->timestamps();
+        });
+
+        Schema::create('password_reset_tokens', function (Blueprint $table) {
+            $table->string('email')->primary();
+            $table->string('token');
+            $table->timestamp('created_at')->nullable();
+        });
+
+        Schema::create('sessions', function (Blueprint $table) {
+            $table->string('id')->primary();
+            $table->foreignId('user_id')->nullable()->index();
+            $table->string('ip_address', 45)->nullable();
+            $table->text('user_agent')->nullable();
+            $table->longText('payload');
+            $table->integer('last_activity')->index();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('users');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('sessions');
+    }
+};
