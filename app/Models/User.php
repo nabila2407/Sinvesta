@@ -19,7 +19,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name_lengkap', //ubah 'name' jadi 'nama_lengkap'
+        'nama_lengkap', //ubah 'name' jadi 'nama_lengkap'
         'username', //tambahkan kolom 'username'
         'email', 
         'password',
@@ -57,5 +57,19 @@ class User extends Authenticatable
     public function getRouteKeyName() : string 
     {
         return 'username';
+    }
+
+    // relasi antara table user dengan table bast
+    // foreign id => 'user_serah_id'
+    public function bastsSerah()
+    {
+        return $this->hasMany(Bast::class, 'user_serah_id');
+    }
+
+    // relasi antara table user dengan table bast
+    // foreign id => 'user_terims_id'
+    public function bastsTerima()
+    {
+        return $this->hasMany(Bast::class, 'user_terima_id');
     }
 }

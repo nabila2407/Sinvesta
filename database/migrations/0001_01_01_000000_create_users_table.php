@@ -25,12 +25,11 @@ return new class extends Migration
 
             // tambahkan kolom role dengan type data enum
             // role hanya memiliki 2 pilihan = 'admin' & 'user'
-            $table->unem('role', ['admin', 'user'])->default('user');
+            $table->enum('role', ['admin', 'user'])->default('user');
 
             // tambahkan kolom untuk menyimpan lembaga | maksimal 100 karakter
             $table->string('lembaga', 100);
 
-            $table->timestamps('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();

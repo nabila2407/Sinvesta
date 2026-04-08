@@ -18,4 +18,10 @@ class Kategori extends Model
     {
         return 'kode_kategori';
     }
+
+    // relasi antara kategori dan barang
+    public function barangs()
+    {
+        return $this->hasMany(Barang::class, 'kategori_id');
+    }
 }

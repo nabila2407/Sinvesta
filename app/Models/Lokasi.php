@@ -18,4 +18,10 @@ class Lokasi extends Model
     {
         return 'kode_lokasi';
     }
+
+    // relasi antara lokasi dan barang
+    public function barangs()
+    {
+        return $this->hasMany(Barang::class, 'lokasi_id');
+    }
 }

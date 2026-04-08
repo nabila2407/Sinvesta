@@ -11,7 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // ! daftarkan UserMiddleware disini, biar bisa digunakan di route/web.php
+        $middleware->alias([
+            'role' => \App\Http\Middleware\UserMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
