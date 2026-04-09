@@ -70,6 +70,28 @@
                         </ul>
                     </li>
 
+                    {{-- Menu Halaman Pengguna --}}
+                    <li class="submenu">
+                        <a href="#">
+                            <i class="bi bi-people"></i>
+                            <span>Pengguna</span>
+                            <span class="ms-auto bi bi-caret-down"></span>
+                        </a>
+
+                        <ul>
+                            <li>
+                                <a href="{{ route('users.index') }}" class="{{ Request::is('dashboard/users*') ? 'active' : '' }}">
+                                    List Pengguna
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('users.create') }}" class="{{ Request::is('dashboard/users/create') ? 'active' : '' }}">
+                                    Tambah Pengguna
+                                </a>
+                            </li>
+                        </ul>    
+
+
                     {{-- jika user yang login adalah 'user' --}}
                     @else
                     {{-- tampilkan menu sidebar khusus untuk 'user' --}}
