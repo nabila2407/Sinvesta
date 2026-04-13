@@ -16,7 +16,7 @@ class UserMiddleware
      *
      * @param  Closure(Request): (Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, $role): Response
     {
         /**
          * ? jika user belum login

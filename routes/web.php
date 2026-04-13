@@ -12,6 +12,9 @@ use App\Http\Controllers\DashboardController;
 // ! Panggil class UserController agar bisa digunakan oleh route
 use App\Http\Controllers\UserController;
 
+// ! Panggil class KategoriController agar bisa digunakan oleh route
+use App\Http\Controllers\KategoriController;
+
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/', function () {
@@ -75,4 +78,19 @@ Route::middleware('auth')->group(function () {
      * * 1 route ini bisa menangani permintaan: index, create, store, show, edit, update dan destory, gokiiiil
      */
     Route::resource('/dashboard/users', UserController::class);
+});
+
+
+
+/**
+ * ? Fungsi Group Middleware Auth dengan role = admin
+ * * Digunakan khusus untuk fitur-fitur yang tersedia hanya untuk user yang sudah login dan role = admin
+ * ! User yang belum login dan user dengan role = 'user' tidak akan bisa akses fitur didalam group ini
+ */
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    // Gunakan KategoriController agar datanya sesuai
+    Route::resource('/dashboard/kategori', KategoriController::class);
+
+    // ? Route untuk fitur ekspor data kategori ke file PDF
+    Route::get('/dashboard/export-kategori-to/pdf', [KategoriController::class, 'exportToPdf'])->name('kategori.exportToPdf');
 });

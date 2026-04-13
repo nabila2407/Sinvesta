@@ -26,8 +26,18 @@
                             <span class="ms-auto bi bi-caret-down"></span>
                         </a>
                         <ul>
-                            <li><a href="#">List Kategori</a></li>
-                            <li><a href="#">Tambah Kategori</a></li>
+                            <li>
+                                <a  href="{{ route('kategori.index') }}"
+                                    class="{{ Request::is('dashboard/kategori*') ? 'active' : '' }}">
+                                    List Kategori
+                                </a>
+                            </li>
+                            <li>
+                                <a  href="{{ route('kategori.create') }}"
+                                    class="{{ Request::is('dashboard/kategori/create') ? 'active' : '' }}">
+                                    Tambah Kategori
+                                </a>
+                            </li>
                         </ul>
                     </li>
 

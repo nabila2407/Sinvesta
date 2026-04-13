@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -55,7 +56,7 @@ class UserController extends Controller
             // role wajib diisi, pilihan hanya 2 'admin' atau 'user'
             'role' => 'required|in:admin,user',
             // lembaga wajib diisi, harus berupa text, maks 100 karakter
-            'lembaga' => 'required|string|max:100'
+            'lembaga' => 'required|string|max:100',
         ];
 
         // ? 2. Tentukan pesan error saat data yang dikirim tidak valid (tidak sesuai aturan diatas)
@@ -80,17 +81,17 @@ class UserController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * ? menampilkan detail 1 data
      */
     public function show(User $user)
     {
         /**
          * ? menampilkan detail 1 data user
          */
-            // * pada tabel user, kita tidak akan menampilkan halaman detail
-            // * kita akan langsung mengalihkan ke form edit data user
-            return redirect()->route('users.edit', $user);
-        
+        // * pada tabel user, kita tidak akan menampilkan halaman detail
+        // * kita akan langsung mengalihkan ke form edit data user
+        return redirect()->route('users.edit', $user);
+
     }
 
     /**
@@ -109,18 +110,78 @@ class UserController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * ? Perbarui 1 data user ke database
      */
     public function update(Request $request, User $user)
     {
-        //
+        // ? 1. membuat aturan validasi untuk nama dan lembaga
+        $aturan = [
+            'nama_lengkap' => 'required|string|max:100',
+            'lembaga' => 'required|string|max:100',
+        ];
+
+        // ? 2. jika username diubah, tambahkan aturan untuk username yang baru
+        if ($request->username !== $user->username) {
+            // username wajib diisi, harus berupa text, maks 50 karakter, harus unik
+            $aturan['username'] = 'required|string|max:50|unique:users,username';
+        }
+
+        // ? 3. jika email diubah, tambahkan aturan untuk email yang baru
+        if ($request->email !== $user->email) {
+            // email wajib diisi, harus berupa email yg valid, maks 100 karakter, harus unik
+            $aturan['email'] = 'required|email|max:100|unique:users,email';
+        }
+
+        // ? 4. jika kolom password diisi, tambahkan aturan untuk password yang baru
+        if ($request->password) {
+            // password wajib diisi, harus berupa text, min 8 karakter, maks 32 karakter, harus sama dengan konfirmasi password
+            $aturan['password'] = 'string|min:8|confirmed';
+        }
+
+        // ? 5. KEAMANAN TAMBAHAN, hanya admin yang bisa memperbarui role
+        if (Auth::user()->role === 'admin') {
+            // role wajib diisi, pilihan antara 'admin' dan 'user'
+            $aturan['role'] = 'required|in:admin,user';
+        }
+
+        // ? 6. Pesan validasi
+        $pesan = [
+            'required' => 'Kolom :attribute nggak boleh kosong!!.',
+            'unique' => 'Kolom :attribute sudah ada yang pakai!.',
+            'email' => 'Kolom :attribute pakai email yang valid dong!.',
+            'min' => 'Kolom :attribute minimal :min karakter ya!.',
+            'confirmed' => 'Konfirmasi :attribute nggak sama.',
+            'in' => 'Kolom :attribute tidak valid.',
+            'max' => 'Kolom :attribute maksimal :max karakter ya!.',
+        ];
+
+        // ? 7. validasi data dari request
+        $validatedData = $request->validate($aturan, $pesan);
+
+        // ? 8. jika password diganti, password yang baru diubah kedalam bentuk enkripsi
+        if ($request->password) {
+            $validatedData['password'] = bcrypt($request->password);
+        }
+
+        // ? 9. update data user dengan data yang sudah divalidasi
+        $user->update($validatedData);
+
+        // ? 10. kembali ke halaman edit user sambil kirim pesan konfirmasi berhasil
+        return redirect()->route('users.edit', $user)->with('berhasil', 'Yeaay! Data Pengguna berhasil diperbarui.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * ? hapus 1 data user yang dipilih
      */
     public function destroy(User $user)
     {
-        //
+        // ? panggil function delete UserPolicy untuk menentukan siapa yang bisa menghapus data user
+        $this->authorize('delete', $user);
+
+        // ? hapus user dari database
+        $user->delete();
+
+        // ? alihkan ke halaman list data pengguna
+        return redirect()->route('users.index')->with('berhasil', 'User berhasil dihapus!');
     }
 }
