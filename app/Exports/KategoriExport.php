@@ -12,6 +12,23 @@ class KategoriExport implements FromCollection
     */
     public function collection()
     {
-        return Kategori::all();
+        // ? tentukan data apa saja yang akan di ekspor ke Excel
+        return Kategori::select(
+            'kode_kategori',
+            'nama_kategori',
+            'deskripsi',
+            'created_at'
+        )->get();
+    }
+
+    // ? berfungsi untuk membuat judul kolom (baris paling atas di excel)
+    public function headings(): array
+    {
+        return [
+            'Kode Kategori',
+            'Nama Kategori',
+            'Deskripsi',
+            'Tanggal Dibuat',
+        ];
     }
 }

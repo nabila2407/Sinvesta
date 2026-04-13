@@ -8,6 +8,10 @@ use Illuminate\Http\Request;
 // ! panggil class facade PDF agar bisa digunakan di function exportToPdf()
 use Barryvdh\DomPDF\Facade\Pdf;
 
+// ! panggil class kategori export dan facade excel agar bisa digunakan di function exportToExcel()
+use App\Export\KategoriExport;
+use Maatwebsite\Excel\Facades\Excel;
+
 class KategoriController extends Controller
 {
     /**
@@ -148,5 +152,14 @@ class KategoriController extends Controller
 
         // ? 3. Download file PDF yang udah dibuat pada langkah no. 2
         return $pdf->download('daftar_kategori_barang.pdf');
+    }
+
+    /**
+     * ? ekspor semua data kategori ke file Excel
+     */
+    public function exportToExcel()
+    {
+        // ? download file excel, isinya sesuai dengan yang dikonfigurasi di file KategoriExport.php
+        return Excel::download(new KategoriExport, 'daftar_kategori_barang.xlsx');
     }
 }

@@ -56,7 +56,7 @@
 
                             {{-- tombol eksport ke excel --}}
                             <li>
-                                <a href="#">
+                                <a href="{{ route('kategori.exportToExcel') }}">
                                     <img src="{{ asset('assets/icon/excel.svg') }}" alt="img" />
                                 </a>
                             </li>
