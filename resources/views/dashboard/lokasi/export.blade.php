@@ -1,11 +1,11 @@
-{{-- ? Buat struktur HTML yang berbeda --}}
+{{-- ? Buat struktur HTML baru untuk di ekspor ke PDF --}}
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>{{ $title ?? 'Data Kategori Barang' }}</title>
+    <title>{{ $title ?? 'Data Lokasi Barang' }}</title>
 
-    {{-- ? buat styling css di sini --}}
+    {{-- Styliong CSS --}}
     <style>
         body {
             font-family: DejaVu Sans, sans-serif;
@@ -72,21 +72,19 @@
         }
     </style>
 </head>
-
-{{-- ? Jika url = /dashboard/print-kategori maka print halaman ini --}}
-<body @if(Request::is('dashboard/print-kategori')) onload="window.print()" @endif>
+<body @if(Request::is('dashboard/print-lokasi')) onload="window.print()" @endif>
 <body>
 
     {{-- HEADER --}}
     <div class="header">
-        <h2>{{ $title ?? 'Daftar Kategori Barang' }}</h2>
+        <h2>{{ $title ?? 'Daftar Lokasi Barang' }}</h2>
         <p>Sistem Manajemen Inventaris</p>
     </div>
 
-    {{-- INFORMASI DATA --}}
+    {{-- INFORMASI EKSPOR --}}
     <div class="meta">
         <strong>Tanggal Cetak:</strong> {{ now()->format('d F Y') }} <br>
-        <strong>Jumlah Data:</strong> {{ $kategoris->count() }} kategori
+        <strong>Jumlah Data:</strong> {{ $lokasis->count() }} lokasi
     </div>
 
     {{-- TABEL DATA --}}
@@ -94,29 +92,28 @@
         <thead>
             <tr>
                 <th width="5%">No</th>
-                <th width="20%">Kode Kategori</th>
+                <th width="20%">Kode Lokasi</th>
                 <th width="25%">Nama Kategori</th>
                 <th width="30%">Deskripsi</th>
                 <th width="20%">Tanggal Dibuat</th>
             </tr>
         </thead>
         <tbody>
-            {{-- JIKA DATA KATEGORI ADA DIDATABASE MAKA DITAMPILKAN --}}
-            @forelse ($kategoris as $kategori)
+            {{-- ? TAMPILKAN SEMUA DATA LOKASI DI DATABASE SATU PERSATU MENGGUNAKAN PERULANGAN --}}
+            @forelse ($lokasis as $lokasi)
                 <tr>
                     <td class="text-center">{{ $loop->iteration }}</td>
-                    <td>{{ $kategori->kode_kategori }}</td>
-                    <td>{{ $kategori->nama_kategori }}</td>
-                    <td>{{ $kategori->deskripsi ?? '-' }}</td>
+                    <td>{{ $lokasi->kode_lokasi }}</td>
+                    <td>{{ $lokasi->nama_lokasi }}</td>
+                    <td>{{ $lokasi->deskripsi ?? '-' }}</td>
                     <td class="text-center">
-                        {{ $kategori->created_at->format('d-m-Y') }}
+                        {{ $lokasi->created_at->format('d-m-Y') }}
                     </td>
                 </tr>
-            {{-- JIKA DATA TIDAK ADA MAKA TAMPILKAN INFORMASI --}}
             @empty
                 <tr>
                     <td colspan="5" class="text-center">
-                        Tidak ada data kategori barang.
+                        Tidak ada data lokasi barang.
                     </td>
                 </tr>
             @endforelse

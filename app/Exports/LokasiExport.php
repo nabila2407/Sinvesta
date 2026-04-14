@@ -2,11 +2,12 @@
 
 namespace App\Exports;
 
-use App\Models\Kategori;
+use App\Models\Lokasi;
 use Maatwebsite\Excel\Concerns\FromCollection;
+
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class KategoriExport implements FromCollection, WithHeadings
+class LokasiExport implements FromCollection, WithHeadings
 {
     /**
     * @return \Illuminate\Support\Collection
@@ -14,20 +15,20 @@ class KategoriExport implements FromCollection, WithHeadings
     public function collection()
     {
         // ? tentukan data apa saja yang akan di ekspor ke Excel
-        return Kategori::select(
-            'kode_kategori',
-            'nama_kategori',
+        return Lokasi::select(
+            'kode_lokasi',
+            'nama_lokasi',
             'deskripsi',
             'created_at'
         )->get();
     }
 
-    // ? berfungsi untuk membuat judul kolom (baris paling atas di excel)
     public function headings(): array
     {
+        // ? berfungsi untuk membuat judul kolom (baris paling atas di excel)
         return [
-            'Kode Kategori',
-            'Nama Kategori',
+            'Kode Lokasi',
+            'Nama Lokasi',
             'Deskripsi',
             'Tanggal Dibuat',
         ];

@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 // ! panggil class kategori export dan facade excel agar bisa digunakan di function exportToExcel()
-use App\Export\KategoriExport;
+use App\Exports\KategoriExport;
 use Maatwebsite\Excel\Facades\Excel;
 
 class KategoriController extends Controller
@@ -96,6 +96,7 @@ class KategoriController extends Controller
      */
     public function update(Request $request, Kategori $kategori)
     {
+        // dd($request->all());
         //? 1. membuat aturan validasi data untuk nama kategori dan deskripsi
         $aturan = [
             'nama_kategori' => 'required|string|max:100',
@@ -116,6 +117,8 @@ class KategoriController extends Controller
 
         //? 4. validasi data berdasarkan aturan dan pesan yang telah dibuat
         $validatedData = $request->validate($aturan, $pesan);
+
+        
 
         //? 5. update data ke database
         $kategori->update($validatedData);
@@ -161,5 +164,20 @@ class KategoriController extends Controller
     {
         // ? download file excel, isinya sesuai dengan yang dikonfigurasi di file KategoriExport.php
         return Excel::download(new KategoriExport, 'daftar_kategori_barang.xlsx');
+    }
+
+    /**
+     * ? cetak list data kategori
+     */
+    public function print()
+    {
+        // ? ambil semua data kategori dari database
+        $kategoris = Kategori::latest()->get();
+
+        // ? jalankan view export.blade.php sambil kirim data :
+        return view('dashboard.kategori.export', [
+            'title' => 'Daftar Kategori Barang', // judul halaman
+            'kategoris' => $kategoris, // semua data kategori
+        ]);
     }
 }

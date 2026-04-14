@@ -118,7 +118,7 @@
                                     name="role" 
                                     id="role_admin" 
                                     value="admin"
-                                    @if (old('role', $user->role) == 'admin') chekcked @endif 
+                                    @if (old('role', $user->role) == 'admin') checked @endif 
                                 />
                                 <label for="role_admin" class="form-check-label">Admin</label>
                             </div>
@@ -129,7 +129,7 @@
                                     name="role" 
                                     id="role_user" 
                                     value="user"
-                                    @if (old('role', $user->role) == 'user') chekcked @endif 
+                                    @if (old('role', $user->role) == 'user') checked @endif 
                                 />
                                 <label for="role_user" class="form-check-label">User</label>
                             </div>

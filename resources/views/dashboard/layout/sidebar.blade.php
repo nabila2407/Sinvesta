@@ -49,8 +49,20 @@
                             <span class="ms-auto bi bi-caret-down"></span>
                         </a>
                         <ul>
-                            <li><a href="#">List Lokasi</a></li>
-                            <li><a href="#">Tambah Lokasi</a></li>
+                            <li>
+                                <a 
+                                    href="{{ route('lokasi.index') }}"
+                                    class="{{ Request::is('dashboard/lokasi*') ? 'active' : '' }}">
+                                    List Lokasi
+                                </a>
+                            </li>
+                            <li>
+                                <a 
+                                    href="{{ route('lokasi.create') }}"
+                                    class="{{ Request::is('dashboard/lokasi/create*') ? 'active' : '' }}">
+                                    Tambah Lokasi
+                                </a>
+                            </li>
                         </ul>
                     </li>
 
@@ -137,7 +149,7 @@
                             </a>
                             <ul>
                                 <li><a href="#">Menunggu Disetujui</a></li>
-                                <li><a href="Riwayat BAST"></a></li>
+                                <li><a href="#">Riwayat BAST</a></li>
                             </ul>
                         </li>
 

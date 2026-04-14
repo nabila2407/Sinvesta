@@ -3,121 +3,125 @@
 
 {{-- ? Tulis kode HTML untuk halaman index user diantara @section --}}
 @section('konten')
+
     {{-- ! konten utama halaman dashboard ditulis disini --}}
 
     <div class="page-header">
 
         {{-- judul halaman --}}
         <div class="page-title">
-            <h4>List Kategori Barang</h4>
-            <h6>Lihat atau cari kategori barang</h6>
+            <h4>List Lokasi Barang</h4>
+            <h6>Lihat atau cari lokasi barang</h6>
         </div>
 
-        {{-- tombol tambah data kategori baru --}}
+        {{-- tombol tambah lokasi baru --}}
         <div class="page-btn">
-            <a href="{{ route('kategori.create') }}" class="btn btn-added">
-                <i class="bi bi-plus-circle"></i>Tambah Kategori
+            <a href="{{ route('lokasi.create') }}" class="btn btn-added">
+                <i class="bi bi-plus-circle"></i>Tambah Lokasi
             </a>
         </div>
+
     </div>
 
-    {{-- card menampilkan daftar kategori barang --}}
+    {{-- card list data lokasi --}}
     <div class="card">
         <div class="card-body">
 
-            {{-- ? jika kategori barang tidak ada didatabase --}}
-            @if ($kategoris->isEmpty())
-                {{-- * tampilkan informasi --}}
+            {{-- ? jika data lokasi tidak ada didatabase --}}
+            @if ($lokasis->isEmpty())
+                {{-- tampilkan informasi --}}
                 <div class="alert alert-info" role="alert">
-                    Tidak ada kategori barang tersedia.
+                    Tidak ada lokasi barang tersedia.
                 </div>
 
-                {{-- ? jika data kategori barang ada di database --}}
+                {{-- ? jika data lokasi ada didatabase --}}
             @else
                 <div class="table-top">
 
-                    {{-- kolom pencarian kategori --}}
+                    {{-- kolom pencarian --}}
                     <div class="search-set">
                         <div class="search-input">
                             <a class="btn btn-searchset"><i class="bi bi-search"></i></a>
                         </div>
                     </div>
 
-                    {{-- menu eksport data kategori ke PDF, EXCEL, dan Cetak --}}
+                    {{-- menu ekspor data lokasi ke PDF, Excel dan Print --}}
                     <div class="wordset">
                         <ul>
 
-                            {{-- tombol eksport ke pdf --}}
+                            {{-- ekspor ke pdf --}}
                             <li>
-                                <a href="{{ route('kategori.exportToPdf') }}">
+                                <a href="{{ route('lokasi.exportToPdf') }}">
                                     <img src="{{ asset('assets/icon/pdf.svg') }}" alt="img" />
                                 </a>
                             </li>
 
-                            {{-- tombol eksport ke excel --}}
+                            {{-- ekspor ke excel --}}
                             <li>
                                 <a href="{{ route('kategori.exportToExcel') }}">
-                                    <img src="{{ asset('assets/icon/excel.svg') }}" alt="img" />
+                                    <img src="{{ asset('assets/icon/excel.svg') }}" alt="">
                                 </a>
                             </li>
 
-                            {{-- tombol cetak --}}
+                            {{-- cetak --}}
                             <li>
-                                <a href="{{ route('kategori.print') }}" target="_blank">
-                                    <img src="{{ asset('assets/icon/printer.svg') }}" alt="img" />
+                                <a href="{{ route('lokasi.print') }}" target="_blank">
+                                    <img src="{{ asset('assets/icon/printer.svg') }}" alt="">
                                 </a>
                             </li>
 
                         </ul>
                     </div>
                 </div>
-
                 <div class="table-responsive">
 
-                    {{-- tabel daftar kategori barang --}}
+                    {{-- tabel list data lokasi --}}
                     <table class="table datanew">
 
-                        {{-- judul kolom tabel --}}
+                        {{-- judul kolom --}}
                         <thead>
                             <tr>
                                 <th>#</th>
                                 <th>Kode</th>
-                                <th>Nama Kategori</th>
+                                <th>Nama Lokasi</th>
                                 <th>Keterangan</th>
                                 <th>Dibuat</th>
                                 <th>Aksi</th>
-                            </tr>
+                            </tr>                       
                         </thead>
 
                         {{-- isi tabel --}}
                         <tbody>
 
-                            {{-- tampilkan semua data kategori satu persatu menggunakan perulangan foreach --}}
-                            @foreach ($kategoris as $kategori)
+                            {{-- ? tampilkan semua data lokasi atau persatu menggunakan perulangan --}}
+                            @foreach ($lokasis as $lokasi)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $kategori->kode_kategori }}</td>
-                                    <td>{{ $kategori->nama_kategori }}</td>
-                                    <td>{{ $kategori->deskripsi }}</td>
-                                    <td>{{ $kategori->created_at }}</td>
+                                    <td>{{ $lokasi->kode_lokasi }}</td>
+                                    <td>{{ $lokasi->nama_lokasi }}</td>
+                                    <td>{{ $lokasi->deskripsi }}</td>
+                                    <td>{{ $lokasi->created_at }}</td>
                                     <td>
-                                        {{-- tombol edit kategori --}}
-                                        <a class="me-3" href="{{ route('kategori.edit', $kategori) }}">
+                                        {{-- tombol edit lokasi --}}
+                                        <a href="{{ route('lokasi.edit', $lokasi) }}" class="me-3">
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
 
-                                        {{-- tombol hapus kategori --}}
-                                        <form action="{{ route('kategori.destroy', $kategori) }}" method="POST"
-                                            class="d-inline">
+                                        {{-- tombol hapus lokasi --}}
+                                        <form action="{{ route('lokasi.destroy', $lokasi) }}" method="POST" class="d-inline">
                                             @csrf
+                                            {{-- ubah method post -> delete --}}
                                             @method('DELETE')
-                                            <button type="submit" class="confirm-text btn p-0 m-0"
-                                                onclick="return confirm('Kategori: {{ $kategori->nama_kategori }} memiliki barang terkait. Yakin ingin dihapus?')">
+                                            <button
+                                                type="submit"\
+                                                class="confirm-text btn p0 m0"
+                                                onclick="return confirm('Lokasi: {{ $lokasi->nama_lokasi }} memiliki barang terkait. Yakin ingin dihapus?')">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </form>
+
                                     </td>
-                                </tr>
+                                </tr> 
                             @endforeach
                         </tbody>
                     </table>

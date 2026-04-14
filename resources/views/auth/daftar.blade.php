@@ -62,7 +62,7 @@
                 @error('email')
                     <div id="email" class="invalid-feedback">
                         {{-- tampilkan pesan eror --}}
-                        {{ message }}
+                        {{ $message }}
                     </div>
                 @enderror
             </div>

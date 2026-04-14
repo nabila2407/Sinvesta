@@ -6,75 +6,72 @@
 
     {{-- ! konten utama halaman dashboard ditulis disini --}}
 
-    {{-- judul kategori --}}
+    {{-- judul halaman --}}
     <div class="page-header">
         <div class="page-title">
-            <h4>Perbarui Data Kategori Barang</h4>
-            <h6>Edit dan Update Data Barang Baru</h6>
+            <h4>Tambah Lokasi Barang</h4>
+            <h6>Tambahkan Data Lokasi Barang Baru</h6>
         </div>
     </div>
 
-    {{-- card form edit data --}}
+    {{-- card form tambah data --}}
     <div class="card">
         <div class="card-body">
 
-            {{-- form edit data kategori --}}
-            <form action="{{ route('kategori.update', $kategori) }}" method="POST">
+            {{-- form tambah data lokasi --}}
+            <form action="{{ route('lokasi.store') }}" method="POST">
 
                 {{-- csrf untuk keamanan form --}}
                 @csrf
 
-                {{-- ganti method dari post -> put --}}
-                @method('put')
-
                 <div class="row">
 
-                    {{-- kolom kode kategori --}}
+                    {{-- kolom kode lokasi --}}
                     <div class="col-lg-6 col-sm-6 col-12">
                         <div class="form-group">
-                            <label for="kode_kategori">Kode Kategori *</label>
-                            <input 
-                                type="text" 
-                                class="form-control @error('kode_kategori') is-invalid @enderror"
-                                id="kode_kategori" 
-                                name="kode_kategori" 
-                                value="{{ old('kode_kategori', $kategori->kode_kategori) }}" 
+                            <label for="kode_lokasi">Kode Lokasi *</label>
+                            <input
+                                type="text"
+                                class="form-control @error('kode_lokasi') is-invalid @enderror"
+                                id="kode_lokasi"
+                                name="kode_lokasi"
+                                value="{{ old('kode_lokasi') }}"
                             />
-                            {{-- jika kolom kode kategori tidak valid --}}
-                            @error('kode_kategori')
+                            {{-- jika kolom kode lokasi tidak valid --}}
+                            @error('kode_lokasi')
                                 {{-- tampilkan pesan error --}}
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
 
-                    {{-- kolom nama kategori --}}
+                    {{-- kolom nama lokasi --}}
                     <div class="col-lg-6 col-sm-6 col-12">
                         <div class="form-group">
-                            <label for="nama_kategori">Nama Kategori *</label>
-                            <input 
-                                type="text" 
-                                class="form-control @error('nama_kategori') is-invalid @enderror"
-                                id="nama_kategori" 
-                                name="nama_kategori" 
-                                value="{{ old('nama_kategori', $kategori->nama_kategori) }}" 
+                            <label for="nama_lokasi">Nama Lokasi *</label>
+                            <input
+                                type="text"
+                                class="form-control @error('nama_lokasi') is-invalid @enderror"
+                                id="nama_lokasi"
+                                name="nama_lokasi"
+                                value="{{ old('nama_lokasi') }}"
                             />
-                            {{-- jika kolom nama kategori tidak valid --}}
-                            @error('nama_kategori')
+                            {{-- jika kolom nama lokasi tidak valid --}}
+                            @error('nama_lokasi')
                                 {{-- tampilkan pesan error --}}
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
-                    
-                    {{-- kolom deskripsi kategori --}}
+
+                    {{-- kolom deskripsi lokasi --}}
                     <div class="col-lg-12">
                         <div class="form-group">
                             <label for="deskripsi">Deskripsi</label>
                             <textarea
                                 class="form-control @error('deskripsi') is-invalid @enderror"
-                                id="deskripsi" 
-                                name="deskripsi">{{ old('deskripsi', $kategori->deskripsi) }}</textarea>
+                                id="deskripsi"
+                                name="deskripsi">{{ old('deskripsi') }}</textarea>
                             {{-- jika kolom deskripsi tidak valid --}}
                             @error('deskripsi')
                                 {{-- tampilkan pesan error --}}
@@ -87,6 +84,7 @@
                     <div class="col-lg-12">
                         <button type="submit" class="btn btn-submit me-2">Simpan</button>
                     </div>
+
                 </div>
             </form>
         </div>

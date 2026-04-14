@@ -15,6 +15,12 @@ use App\Http\Controllers\UserController;
 // ! Panggil class KategoriController agar bisa digunakan oleh route
 use App\Http\Controllers\KategoriController;
 
+// ! Panggil class LokasiController agar bisa digunakan oleh route
+use App\Http\Controllers\LokasiController;
+
+// ! Panggil class BarangController agar bisa digunakan oleh route
+use App\Http\Controllers\BarangController;
+
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/', function () {
@@ -96,4 +102,31 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     // ? Route untuk fitur ekspor data kategori ke file EXCEL
     Route::get('/dashboard/export-kategori-to/excel', [KategoriController::class, 'exportToExcel'])->name('kategori.exportToExcel');
+
+    // ? Route untuk fitur cetak daftar kategori barang
+    Route::get('/dashboard/print-kategori', [KategoriController::class, 'print'])->name('kategori.print');
+
+
+    /**
+     * ? Route untuk mengelola data lokasi
+     * * karena controller yang digunakan dalah controller resource, maka method route juga pake resource
+     * * 1 route ini bisa menangani permintaan: index, create, store, show, edit, update dan destory
+     */
+    Route::resource('/dashboard/lokasi', LokasiController::class);
+
+    /**
+     * ? Route untuk mengelola data barang
+     * * karena controller yang digunakan dalah controller resource, maka method route juga pake resource
+     * * 1 route ini bisa menangani permintaan: index, create, store, show, edit, update dan destroy
+     */
+    Route::resource('/dashboard/barang', BarangController::class);
+
+    // ? Route untuk fitur ekspor data lokasi ke file PDF
+    Route::get('/dashboard/export-lokasi-to/pdf', [LokasiController::class, 'exportToPdf'])->name('lokasi.exportToPdf');
+
+    // ? Route untuk fitur ekspor data lokasi ke file Excel
+    Route::get('/dashboard/export-lokasi-to/excel', [LokasiController::class, 'exportToExcel'])->name('lokasi.exportToExcel');
+
+    // ? Route untuk fitur cetak daftar lokasi barang
+    Route::get('/dashboard/print-lokasi', [LokasiController::class, 'print'])->name('lokasi.print');
 });
