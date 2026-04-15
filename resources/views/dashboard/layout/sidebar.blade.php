@@ -74,8 +74,20 @@
                             <span class="ms-auto bi bi-caret-down"></span>
                         </a>
                         <ul>
-                            <li><a href="#">List Barang</a></li>
-                            <li><a href="#">Tambah Barang</a></li>
+                            <li>
+                                <a 
+                                    href="{{ route('barang.index') }}"
+                                    class="{{ Request::is('dashboard/barang*') ? 'active' : '' }}">
+                                    List Barang
+                                </a>
+                            </li>
+                            <li>
+                                <a 
+                                    href="{{ route('barang.create') }}"
+                                    class="{{ Request::is('dashboard/barang/create') ? 'active' : '' }}">
+                                    Tambah Barang
+                                </a>
+                            </li>
                         </ul>
                     </li>
 

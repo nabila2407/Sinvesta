@@ -129,4 +129,5 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     // ? Route untuk fitur cetak daftar lokasi barang
     Route::get('/dashboard/print-lokasi', [LokasiController::class, 'print'])->name('lokasi.print');
+
 });
