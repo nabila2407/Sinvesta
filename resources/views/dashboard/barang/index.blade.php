@@ -132,7 +132,7 @@
             {{-- form filter sampe sini --}}
 
             {{-- jika data barang tidak ada di database --}}
-            @if ($barang->isEmpty())
+            @if ($barangs->isEmpty())
                 {{-- tampilkan informasi --}}
                 <div class="alert alert-info" role="alert">
                     Tidak ada barang tersedia.

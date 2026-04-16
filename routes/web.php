@@ -121,6 +121,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
      */
     Route::resource('/dashboard/barang', BarangController::class);
 
+    // ? Route untuk download QRCode barang dari halaman show detail barang
+    Route::get('/dashboard/barang/{barang}/download-qrcode', [BarangController::class, 'downloadQR'])->name('barang.downloadQr');
+
     // ? Route untuk fitur ekspor data lokasi ke file PDF
     Route::get('/dashboard/export-lokasi-to/pdf', [LokasiController::class, 'exportToPdf'])->name('lokasi.exportToPdf');
 

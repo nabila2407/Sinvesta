@@ -16,7 +16,7 @@ class Bast extends Model
     ];
 
     // relasi antara bast dan barang 
-    public function kategori()
+    public function barang()
     {
         return $this->belongsTo(Barang::class, 'barang_id');
     }
