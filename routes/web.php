@@ -106,9 +106,19 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // ? Route untuk fitur cetak daftar kategori barang
     Route::get('/dashboard/print-kategori', [KategoriController::class, 'print'])->name('kategori.print');
 
+    // ? Route untuk fitur ekspor data barang ke file PDF
+    Route::get('/dashboard/export-barang-to/pdf', [BarangController::class, 'exportToPdf'])->name('barang.exportToPdf');
+
+    // ? Route untuk fitur ekspor data barang ke file PDF
+    Route::get('/dashboard/export-barang-to/excel', [BarangController::class, 'exportToExcel'])->name('barang.exportToExcel');
+
+    // ? Route untuk fitur cetak daftar barang
+    Route::get('/dashboard/print-barang', [BarangController::class, 'print'])->name('barang.print');
+
+
 
     /**
-     * ? Route untuk mengelola data lokasi
+     * ? Route untuk mengelola data barang
      * * karena controller yang digunakan dalah controller resource, maka method route juga pake resource
      * * 1 route ini bisa menangani permintaan: index, create, store, show, edit, update dan destory
      */

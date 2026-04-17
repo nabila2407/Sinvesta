@@ -7,10 +7,13 @@ use App\Models\Kategori;
 use App\Models\Lokasi;
 use App\Models\Bast;
 use Illuminate\Http\Request;
+use App\Exports\BarangExport;
 
 // ! panggil class facades agar bisa digunakan di function downloadQr
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Response;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Maatwebsite\Excel\Facades\Excel;
 
 class BarangController extends Controller
 {
@@ -150,10 +153,119 @@ class BarangController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * ? perbarui data barang yang diedit
      */
+    public function update(Request $request, Barang $barang)
+    {
+        // ? 1. buat aturan validasi
+        $aturan = [
+            'nama_barang' => 'required|string|max:100',
+            'kategori_id' => 'required|exists:kategoris,id',
+            'lokasi_id' => 'required|exists:lokasis,id',
+            'status_barang' => 'required|in:Baik,Rusak Ringan,Rusak Berat,Hilang',
+            'deskripsi' => 'nullable|string',
+        ];
+
+        //? 2. jika kode_barang diubah, buat aturan untuk kode_barang yang baru
+        if ($request->kode_barang != $barang->kode_barang) {
+            $aturan['kode_barang'] = 'required|string|max:20|unique:barangs,kode_barang';
+        }
+
+        // ? 3. buat pesan error saat data tidak valid
+        $pesan = [
+            'required' => 'Kolom :attribute nggak boleh kosong ya!.',
+            'unique' => 'Kolom :attribute sudah ada yang pakai!.',
+            'max' => 'Kolom :attribute maksimal :max karakter.',
+            'exists' => 'Kolom :attribute tidak valid.',
+            'in' => 'Kolom :attribute tidak valid.',
+            'string' => 'Kolom :attribute harus berupa teks.',
+        ];
+
+        // ? 4. lakukan validasi data
+        $validatedData = $request->validate($aturan, $pesan);
+
+        // ? 5. perbarui data ke database
+        $barang->update($validatedData);
+
+        // ? 6. alihkan ke halaman list barang dan kirim pesan konfirmasi berhasil!
+        return redirect()->route('barang.index')->with('berhasil', 'barang berhasil diupdate.');
+    }
+
+    /**
+     * ? hapus data barang dari database
+     */ 
     public function destroy(Barang $barang)
     {
-        //
+        // ? hanya admin yang bisa hapus data barang
+        $this->authorize('delete', $barang);
+        
+        // ? hapus data barang dari database
+        $barang->delete();
+
+        // ? alihkan ke halaman List Barang sambil kirim pesan konfirmasi
+        return redirect()->route('barang.index')->with('berhasil', 'barang berhasil dihapus.');
+
+    }
+
+    /**
+     * ? ekspor semua data barang yang ada didatabase ke file PDF
+     */
+    public function exportToPdf()
+    {
+        // ? ambil semua data barang, urutkan dari yang paling baru!
+        $barangs = Barang::with(['kategori', 'lokasi'])->latest()->get();
+
+        // ? buat QRCode untuk masing-masing barang menggunakan perulangan
+        foreach ($barangs as $barang) {
+            $barang->qr_base64 = base64_encode(
+                QrCode::format('svg') // ? buat dalam format SVG
+                    ->size(80) // ? ukuran 90
+                    ->generate(route('barang.show', $barang) // ? generate QRCode dari link detail barang
+                    )
+            );
+        }
+
+        // ? buat file pdf dari view export.blade.php di folder barang
+        $pdf = Pdf::loadView('dashboard.barang.export', [
+            'title' => 'Daftar Barang Inventaris', // ? kirim judul halamannya
+            'barangs' => $barangs, // ? dan data barang
+        ])->setPaper('a4', 'portrait'); // ? buat pdf dengan ukuran A4 dan potrait
+
+        // ? download PDF
+        return $pdf->download('daftar_barang_inventaris.pdf');
+    }
+
+    /**
+     * ? ekspor semua data barang yang ada didatabase ke file excel
+     */
+    public function exportToExcel()
+    {
+        //? download excel berdasarkan konfigurasi yang ada di file BarangExport.php
+        return Excel::download(new BarangExport, 'daftar_barang_inventaris.xlsx');
+    }
+
+    /**
+     * ? cetak semua data barang
+     */
+    public function print()
+    {
+        // ? ambil semua data barang, urutkan dari yang paling baru!
+        $barangs = Barang::with(['kategori', 'lokasi'])->latest()->get();
+
+        // ? buat QRCode untuk masing-masing barang menggunakan perulangan
+        foreach ($barangs as $barang) {
+            $barang->qr_base64 = base64_encode(
+                QrCode::format('svg') // ? buat dalam format SVG
+                    ->size(80) // ? ukuran 90
+                    ->generate(route('barang.show', $barang) // ? generate QRCode dari link detail barang
+                )
+            );
+        }
+
+        // ? jalankan view export.blade.php sambil kirim data :
+        return view('dashboard.barang.export', [
+            'title' => 'Daftar Barang', // judul halaman
+            'barangs' => $barangs, // semua data barang
+        ]);
     }
 }

@@ -70,7 +70,7 @@
                         <div class="col-6">
                             <div class="mb-3">
                                 <div>Lokasi Barang:</div>
-                                <h4 class="fw-bold">{{ $barang->lokasi_barang }}</h4>
+                                <h4 class="fw-bold">{{ $barang->lokasi->nama_lokasi }}</h4>
                             </div>
                         </div>
 
@@ -111,7 +111,7 @@
                         </div>
 
                         {{-- tombol cetak QRCode --}}
-                        <a class="btn btn-secondary mx-0" onclick="window.print()">
+                        <a class="btn btn-secondary mx-0" onclick="window.print()" target="_blank">
                             <i class="bi bi-printer"></i>
                         </a>
 
