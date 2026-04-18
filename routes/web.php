@@ -21,6 +21,9 @@ use App\Http\Controllers\LokasiController;
 // ! Panggil class BarangController agar bisa digunakan oleh route
 use App\Http\Controllers\BarangController;
 
+// ! Panggil class BastController agar bisa digunakan oleh route
+use App\Http\Controllers\BastController;
+
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/', function () {
@@ -84,6 +87,20 @@ Route::middleware('auth')->group(function () {
      * * 1 route ini bisa menangani permintaan: index, create, store, show, edit, update dan destory, gokiiiil
      */
     Route::resource('/dashboard/users', UserController::class);
+
+     /**
+     * ? Route untuk mengelola data barang
+     * * karena controller yang digunakan dalah controller resource, maka method route juga pake resource
+     * * 1 route ini bisa menangani permintaan: index, create, store, show, edit, update dan destroy
+     */
+    Route::resource('/dashboard/barang', BarangController::class);
+    
+    /**
+     * ? Route untuk mengelola data bast
+     * * karena controller yang digunakan adalah controller resource, maka method route juga pake resource
+     * * 1 route ini bisa menangani permintaan: index, create, store, show, edit, update dan destory, gokiiiil
+     */
+    Route::resource('/dashboard/bast', BastController::class);
 });
 
 
@@ -123,13 +140,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
      * * 1 route ini bisa menangani permintaan: index, create, store, show, edit, update dan destory
      */
     Route::resource('/dashboard/lokasi', LokasiController::class);
-
-    /**
-     * ? Route untuk mengelola data barang
-     * * karena controller yang digunakan dalah controller resource, maka method route juga pake resource
-     * * 1 route ini bisa menangani permintaan: index, create, store, show, edit, update dan destroy
-     */
-    Route::resource('/dashboard/barang', BarangController::class);
 
     // ? Route untuk download QRCode barang dari halaman show detail barang
     Route::get('/dashboard/barang/{barang}/download-qrcode', [BarangController::class, 'downloadQR'])->name('barang.downloadQr');

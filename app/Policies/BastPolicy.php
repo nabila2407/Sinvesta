@@ -2,10 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\Barang;
+use App\Models\Bast;
 use App\Models\User;
+use Illuminate\Auth\Access\Response;
 
-class BarangPolicy
+class BastPolicy
 {
     /**
      * ? menentukan siapa saja yang bisa melihat halaman list Bast
@@ -22,7 +23,10 @@ class BarangPolicy
     public function view(User $user, Bast $bast): bool
     {
         // ? yang bisa lihat detail Bast adalah admin
-        return true;
+        return $user->role === 'admin'
+            || $user->id === $bast->user_serah_id //? atau user yang jadi user penyerah
+            || $user->id === $bast->user_terima_id; //? atau user yang jadi user penerima
+        // ? selain yang diatas ga bisa lihat detail bast
     }
 
     /**
@@ -66,5 +70,27 @@ class BarangPolicy
     public function forceDelete(User $user, Bast $bast): bool
     {
         return false;
+    }
+
+    /**
+     * ? menentukan siapa saja yang bisa menyetujui Bast sebagai user penyerah
+     */
+    public function approveSerah(User $user, Bast $bast)
+    {
+        // ? hanya user penyerah dibast tersebut dan status bast = menunggu
+        // ? yang bisa melakukan approval (menyetujui) sebagai user penyerah
+        return $user->id === $bast->user_serah_id
+            && $bast->status_serah === 'Menunggu';
+    }
+
+    /**
+     * ? menentukan siapa saja yang bisa menyetujui Bast sebagai user penerima
+     */
+    public function approveTerima(User $user, Bast $bast)
+    {
+        // ? hanya user penerima dibast tersebut dan status bast = menunggu
+        // ? yang bisa melakukan approval (menyetujui) sebagai user penerima
+        return $user->id === $bast->user_terima_id
+            && $bast->status_terima === 'Menunggu';
     }
 }

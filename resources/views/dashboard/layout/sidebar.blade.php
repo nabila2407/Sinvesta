@@ -99,8 +99,20 @@
                             <span class="ms-auto bi bi-caret-down"></span>
                         </a>
                         <ul>
-                            <li><a href="#">List Berita Acara</a></li>
-                            <li><a href="#">Tambah Berita Acara</a></li>
+                            <li>
+                                <a 
+                                    href="{{ route('bast.index') }}"
+                                    class="{{ Request::is('dashboard/bast*') ? 'active' : '' }}">
+                                    List Berita Acara
+                                </a>
+                            </li>
+                            <li>
+                                <a 
+                                    href="href="{{ route('barang.create') }}"
+                                    class="{{ Request::is('dashboard/barang/create') ? 'active' : '' }}">
+                                    Buat Berita Acara
+                                </a>
+                            </li>
                         </ul>
                     </li>
 
