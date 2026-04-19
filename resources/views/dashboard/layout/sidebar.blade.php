@@ -108,7 +108,7 @@
                             </li>
                             <li>
                                 <a 
-                                    href="href="{{ route('barang.create') }}"
+                                    href="{{ route('barang.create') }}"
                                     class="{{ Request::is('dashboard/barang/create') ? 'active' : '' }}">
                                     Buat Berita Acara
                                 </a>
