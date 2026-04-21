@@ -40,7 +40,7 @@
 
             {{-- tombol toggle profil --}}
             <a href="#" class="dropdown-toggle nav-link userset" data-bs-toggle="dropdown">
-                <span class="user.img">
+                <span class="user-img">
                     <i class="bi bi-person-circle"></i>
                     <span class="status online"></span>
                 </span>
@@ -83,17 +83,17 @@
 
         {{-- tombol toggle menu profil --}}
         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fa fa-elilipsis-v"></i>
+            <i class="fa fa-elipsis-v"></i>
         </a>
 
         {{-- menu profil khusu mobile --}}
-        <div class="dropdown-menu deopdown-menu-right">
+        <div class="dropdown-menu dropdown-menu-right">
 
             {{-- tombol edit profil khusu mobile --}}
             <a href="{{ route('users.edit', Auth::user()) }}" class="dropdown-item">Profil Ku</a>
 
             {{-- tombol logout khusus mobile --}}
-            <form action="{{ route('logout') }}" method="POST"></form>
+            <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button class="dropdown-item py-0" type="submit">Logout</button>
             </form>

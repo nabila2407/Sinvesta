@@ -14,6 +14,11 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Riskihajar\Terbilang\Facades\Terbilang;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\BastExport;
+use Illuminate\Support\Facades\Auth;
+
 
 class BastController extends Controller
 {
@@ -147,34 +152,182 @@ class BastController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * ? tampil detail berita acara yang dipilih
      */
     public function show(Bast $bast)
     {
-        //
+        //? hanya admin atau user penyerah atau user penerima yang bisa membuka detail bast
+        $this->authorize('view', $bast);
+        
+        //? tampilkan view show.blade.php di folder dashboard/bast, lalu kirimkan data
+        return view('dashboard.bast.show', [
+            'title' => 'Berita Acara Serah Terima', // judul halaman
+            'bast' => $bast, // data bast yang akan ditampilkan
+        ]);
+
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * ? menampilkan form edit berita acara yang dipilih
      */
     public function edit(Bast $bast)
     {
-        //
+        //? hanya admin yang bisa membuka halaman
+        $this->authorize('update', $bast);
+        
+        //? tampilkan view edit.blade.php di folder dashboard/bast, lalu kirimkan data :
+        return view('dashboard.bast.edit', [
+            'title' => 'Ubah Berita Acara', // judul halaman
+            'bast' => $bast, // data bast yang akan ditampilkan
+            'users' => User::latest()->select('id', 'nama_lengkap')->get(), // semua data user yang ada di database
+            'barangs' => Barang::latest()->select('id', 'kode_barang', 'nama_barang')->get(), // semua data barang yang ada di database
+        ]);
+
     }
 
+
     /**
-     * Update the specified resource in storage.
+     * ? perbarui data berita acara yang dipilih ke database,
+     * ? lalu buat ulang dokumen pdf yang sesuai dengan data yang sudah diperbarui
      */
     public function update(Request $request, Bast $bast)
     {
-        //
+        //? 1. membuat aturan validasi
+        $aturan = [
+            'barang_id' => 'required|exists:barangs,id',
+            'user_serah_id' => 'required|exists:users,id',
+            'status_serah' => 'required|in:Menunggu,Disetujui',
+            'user_terima_id' => 'required|exists:users,id',
+            'status_terima' => 'required|in:Menunggu,Disetujui',
+        ];
+
+        //? 2. membuat pesan custom validasi
+        $pesan = [
+            'required' => ':Attribute wajib diisi!',
+            'in' => ':Attribute tidak valid!',
+            'exists' => ':Attribute tidak ditemukan di database!',
+        ];
+
+        //? 3. lakukan validasi data
+        $validatedData = $request->validate($aturan, $pesan);
+
+        // ? 4. perbarui data bast ke database
+        $bast->update($validatedData);
+
+        // ? 5. ambil tanggal diperbaruinya berita acara dari kolom updated_at, lalu ubah ke format indonesia
+        $tanggal = Carbon::parse($bast->updated_at);
+
+        // ? 6. buat ulang dokumen berita acara menggunakan format view dokumen.blade.php
+        $pdf = Pdf::loadView('dashboard.bast.dokumen', [
+            'bast' => $bast,
+            'hari' => strtoupper($tanggal->translatedFormat('l')), // ambil hari dari tanggal (contoh : Senin)
+            'tanggal' => strtoupper(Terbilang::make($tanggal->day)), // ubah tanggal menjadi terbilang (contoh : Lima)
+            'bulan' => strtoupper($tanggal->translatedFormat('F')), // ambil bulan dari tanggal (contoh : Januari)
+            'tahun_terbilang' => strtoupper(Terbilang::make($tanggal->year)), // ubah tahun menjadi terbilang (contoh : Dua ribu dua puluh enam)
+        ])->setPaper('a4', 'portrait'); // set ukuran kertas dan orientasi
+
+        // ? 7. simpan ulang dokumen pdf ke storage dengan nama berdasarkan id bast
+        $filename = 'Bast-'.$bast->id.'.pdf';
+        $path = 'bast-pdf/'.$filename;
+        Storage::put($path, $pdf->output());
+        
+        // ? Simpan kembali path file pdf yang sudah diperbarui ke kolom file_export di tabel bast
+        $bast->update([
+            'file_export' => $path,
+        ]);
+
+        // ? 8. alihkan ke halaman index bast, dengan pesan berhasil diperbarui
+        return redirect()->route('bast.index')->with('berhasil', 'Berita Acara Serah Terima berhasil diperbarui.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * ? hapus data berita acara yang dipilih dari database, dan hapus juga file pdf nya dari storage jika ada
      */
     public function destroy(Bast $bast)
     {
-        //
+        // ? hanya admin yang bisa menghapus bast
+        $this->authorize('delete', $bast);
+        
+        //? 1. cek & hapus file pdf jika ada
+        if ($bast->file_export && Storage::exists($bast->file_export)) {
+            Storage::delete($bast->file_export);
+        }
+
+        // ? 2. hapus data bast
+        $bast->delete();
+
+        // ? 3. alihkan ke halaman index bast, dengan pesan berhasil dihapus
+        return redirect()->route('bast.index')->with('berhasil', 'Berita Acara Serah Terima berhasil dihapus.');
+    }    
+
+    /**
+     * ? download file pdf berita acara yang sudah dibuat
+     */
+    public function downloadPdf(Bast $bast)
+    {
+        // ? download file dokumen berita acara yang sudah disimpan di storage,
+        // ? dengan nama file sesuai dengan nama file yang ada di kolom file_export di tabel bast
+        return Storage::download($bast->file_export);
+    }
+
+    /**
+     * ? ekspor semua data list berita acara
+     */
+    public function exportToPdf()
+    {
+        // ? ambil semua data bast beserta relasinya, lalu urutkan dari yang paling baru
+        $basts = Bast::with(['barang.kategori', 'barang.lokasi', 'userSerah', 'userTerima'])->latest()->get();
+
+        // ? generate kode QR untuk setiap bast,
+        // ? dengan isi QR berupa url ke halaman detail barang yang terkait dengan bast tersebut
+        foreach ($basts as $bast) {
+            $bast->qr_base64 = base64_encode(
+                QrCode::format('svg')->size(80)->generate(
+                    route('barang.show', $bast->barang)
+                )
+            );
+        }
+
+        // ? buat dokumen pdf menggunakan format view export.blade.php
+        $pdf = Pdf::loadView('dashboard.bast.export', [
+            'title' => 'Daftar Berita Acara Serah Terima', // judul halaman
+            'basts' => $basts, // data bast yang akan diekspor ke pdf
+        ])->setPaper('a4', 'portrait');
+
+        // ? download file pdf yang sudah digenerate, dengan nama file daftar_berita_acara_serah_terima.pdf
+        return $pdf->download('daftar_berita_acara_serah_terima.pdf');
+    }
+
+    /**
+     * ? ekspor semua data list berita acara ke file excel
+     */
+    public function exportToExcel()
+    {
+        // ? download file excel yang sudah digenerate, dengan nama file daftar_berita_acara_serah_terima.xlsx
+        return Excel::download(new BastExport, 'daftar_berita_acara_serah_terima.xlsx');
+    }
+
+    /**
+     * ? cetak semua data berita acara
+     */
+    public function print()
+    {
+        // ? ambil semua data bast beserta relasinya, lalu urutkan dari yang paling baru
+        $basts = Bast::with(['barang.kategori', 'barang.lokasi', 'userSerah', 'userTerima'])->latest()->get();
+
+        // ? generate kode QR untuk setiap bast,
+        foreach ($basts as $bast) {
+            $bast->qr_base64 = base64_encode(
+                QrCode::format('svg')->size(80)->generate(
+                    route('barang.show', $bast->barang)
+                )
+            );
+        }
+
+        // ? tampilkan view export.blade.php di folder dashboard/bast, lalu kirimkan data :
+        return view('dashboard.bast.export', [
+            'title' => 'Daftar Berita Acara Serah Terima', // judul halaman
+            'basts' => $basts, // data bast yang akan dicetak, dengan kode QR yang sudah digenerate
+        ]);
     }
 }

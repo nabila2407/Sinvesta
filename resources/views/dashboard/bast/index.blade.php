@@ -39,21 +39,21 @@
                     <ul>
                         {{-- ekspor ke PDF --}}
                         <li>
-                            <a href="#">
+                            <a href="{{ route('bast.exportToPdf') }}">
                                 <img src="{{ asset('assets/icon/pdf.svg') }}" alt="img" />
                             </a>
                         </li>
 
                         {{-- ekspor ke Excel --}}
                         <li>
-                            <a href="#">
+                            <a href="{{ route('bast.exportToExcel') }}">
                                 <img src="{{ asset('assets/icon/excel.svg') }}" alt="img" />
                             </a>
                         </li>
 
                         {{-- print --}}
                         <li>
-                            <a href="#">
+                            <a href="{{ route('barang.print') }}">
                                 <img src="{{ asset('assets/icon/printer.svg') }}" alt="img" />
                             </a>
                         </li>
@@ -203,7 +203,7 @@
                                     </td>
                                     <td>
                                         {{-- tombol download dokumen berita acara --}}
-                                        <a class="me-3" href="#">
+                                        <a class="me-3" href="{{ route('bast.downloadPdf', $bast) }}">
                                             <i class="bi bi-download"></i>
                                         </a>
 
@@ -236,7 +236,6 @@
             @endif
         </div>
     </div>
-</div>
 @endsection
 
 {{-- ? Tulis kode JS di bawah ini --}}
